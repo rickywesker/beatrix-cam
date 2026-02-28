@@ -106,21 +106,22 @@ fi
 # ---------------------------------------------------------------------------
 echo "[4/8] Installing mediamtx..."
 
-if [[ -f "$INSTALL_DIR/mediamtx" ]]; then
-    echo "  -> mediamtx binary already exists, updating..."
-fi
-
 mkdir -p "$INSTALL_DIR"
 
-MEDIAMTX_URL="https://github.com/bluenviron/mediamtx/releases/download/${MEDIAMTX_VERSION}/mediamtx_${MEDIAMTX_VERSION}_linux_arm64v8.tar.gz"
-TEMP_TAR=$(mktemp /tmp/mediamtx.XXXXXX.tar.gz)
+# Check if mediamtx binary already exists (e.g. manually placed)
+if [[ -f "$INSTALL_DIR/mediamtx" ]]; then
+    echo "  -> mediamtx binary already exists at $INSTALL_DIR/mediamtx, skipping download"
+else
+    MEDIAMTX_URL="https://github.com/bluenviron/mediamtx/releases/download/${MEDIAMTX_VERSION}/mediamtx_${MEDIAMTX_VERSION}_linux_arm64v8.tar.gz"
+    TEMP_TAR=$(mktemp /tmp/mediamtx.XXXXXX.tar.gz)
 
-echo "  -> Downloading mediamtx ${MEDIAMTX_VERSION} for ARM64..."
-curl -fsSL "$MEDIAMTX_URL" -o "$TEMP_TAR"
-tar -xzf "$TEMP_TAR" -C "$INSTALL_DIR" mediamtx
-rm -f "$TEMP_TAR"
-chmod +x "$INSTALL_DIR/mediamtx"
-echo "  -> Installed to $INSTALL_DIR/mediamtx"
+    echo "  -> Downloading mediamtx ${MEDIAMTX_VERSION} for ARM64..."
+    curl -fsSL "$MEDIAMTX_URL" -o "$TEMP_TAR"
+    tar -xzf "$TEMP_TAR" -C "$INSTALL_DIR" mediamtx
+    rm -f "$TEMP_TAR"
+    chmod +x "$INSTALL_DIR/mediamtx"
+    echo "  -> Installed to $INSTALL_DIR/mediamtx"
+fi
 
 # ---------------------------------------------------------------------------
 # 4. Deploy configuration files
