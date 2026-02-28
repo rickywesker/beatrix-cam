@@ -24,7 +24,7 @@ apiAddress: 127.0.0.1:9997
 # RTSP (for VLC, ffplay, other RTSP clients)
 rtsp: yes
 rtspAddress: :8554
-protocols: [tcp]
+rtspTransports: [tcp]
 
 # HLS (HTTP Live Streaming - broad browser compatibility)
 hls: yes
@@ -59,7 +59,7 @@ paths:
     rpiCameraWidth: 1280
     rpiCameraHeight: 720
     rpiCameraFPS: 30
-    rpiCameraCodec: h264
+    rpiCameraCodec: hardwareH264
     rpiCameraProfile: main
     rpiCameraLevel: "4.1"
     rpiCameraBitrate: 2000000
