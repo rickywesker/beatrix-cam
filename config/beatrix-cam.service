@@ -1,0 +1,53 @@
+# =============================================================================
+# Beatrix Cam - mediamtx streaming service
+# =============================================================================
+# Streams Pi Camera Module 3 video via RTSP, WebRTC, and HLS
+# using mediamtx with native rpicam integration.
+# =============================================================================
+
+[Unit]
+Description=Beatrix Night Vision Camera (mediamtx)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/opt/mediamtx/mediamtx /opt/mediamtx/mediamtx.yml
+WorkingDirectory=/opt/mediamtx
+
+# Run as root for camera device access
+User=root
+Group=root
+
+# Restart policy - always restart on failure with increasing delay
+Restart=on-failure
+RestartSec=3
+StartLimitIntervalSec=60
+StartLimitBurst=5
+
+# Resource limits appropriate for Pi Zero 2W (512MB RAM)
+MemoryMax=128M
+MemoryHigh=96M
+
+# Give camera/encoder access time on startup
+TimeoutStartSec=15
+
+# Clean shutdown
+TimeoutStopSec=5
+KillMode=mixed
+KillSignal=SIGTERM
+
+# Hardening
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/opt/mediamtx
+PrivateTmp=true
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=beatrix-cam
+
+[Install]
+WantedBy=multi-user.target

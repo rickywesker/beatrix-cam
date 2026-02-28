@@ -1,0 +1,101 @@
+# =============================================================================
+# mediamtx Configuration - Beatrix Night Vision Camera
+# =============================================================================
+# Hardware: Pi Zero 2W + Camera Module 3 (IMX708) + 940nm IR LED
+# Stream:   H.264 hardware-encoded, 1280x720 @ 30fps
+# =============================================================================
+
+# ---------------------------------------------------------------------------
+# Global settings
+# ---------------------------------------------------------------------------
+
+# Logging (warn in production to reduce CPU usage on Pi Zero 2W)
+logLevel: warn
+logDestinations: [stdout]
+
+# API server - used by web frontend for stream info
+api: yes
+apiAddress: 127.0.0.1:9997
+
+# ---------------------------------------------------------------------------
+# Protocol listeners
+# ---------------------------------------------------------------------------
+
+# RTSP (for VLC, ffplay, other RTSP clients)
+rtsp: yes
+rtspAddress: :8554
+protocols: [tcp]
+
+# HLS (HTTP Live Streaming - broad browser compatibility)
+hls: yes
+hlsAddress: :8888
+hlsVariant: lowLatency
+hlsSegmentCount: 3
+hlsSegmentDuration: 500ms
+hlsPartDuration: 100ms
+hlsAllowOrigin: '*'
+
+# WebRTC (lowest latency, modern browsers)
+webrtc: yes
+webrtcAddress: :8889
+webrtcAllowOrigin: '*'
+webrtcICEServers2: []
+
+# Disable unused protocols to save resources
+rtmp: no
+srt: no
+
+# ---------------------------------------------------------------------------
+# Stream paths
+# ---------------------------------------------------------------------------
+
+paths:
+  beatrix:
+    # Use the native rpicam integration (no external process needed).
+    # mediamtx talks directly to libcamera and the hardware H.264 encoder.
+    source: rpiCamera
+
+    # --- Video settings ---
+    rpiCameraWidth: 1280
+    rpiCameraHeight: 720
+    rpiCameraFPS: 30
+    rpiCameraCodec: h264
+    rpiCameraProfile: main
+    rpiCameraLevel: "4.1"
+    rpiCameraBitrate: 2000000
+
+    # Use a shorter IDR period for faster stream start and seeking
+    rpiCameraIDRPeriod: 30
+
+    # --- Night vision / low-light optimization ---
+    # The 940nm IR LED provides invisible illumination. These settings
+    # maximize the camera's sensitivity to IR light.
+
+    # Auto white balance off - IR light confuses AWB
+    rpiCameraAWB: custom
+    rpiCameraAWBGains: [1.0, 1.0]
+
+    # Extended exposure for low-light (microseconds)
+    # Max ~33ms at 30fps; allow up to 30ms for near-max exposure per frame
+    rpiCameraExposure: normal
+    rpiCameraShutter: 30000
+
+    # High analogue gain to boost IR sensitivity
+    rpiCameraGain: 16
+
+    # Metering mode: center-weighted works well for pet monitoring
+    rpiCameraMetering: centre
+
+    # Denoise: use the fast CDN mode to reduce noise without heavy CPU load
+    rpiCameraDenoise: cdn_fast
+
+    # Autofocus: continuous mode keeps subject in focus
+    rpiCameraAfMode: continuous
+    rpiCameraAfSpeed: normal
+
+    # Tuning: use the NoIR tuning file if available (optimized for no IR filter)
+    # Pi Zero 2W uses the VC4 ISP (pisp is for Pi 5 only)
+    rpiCameraTuningFile: /usr/share/libcamera/ipa/rpi/vc4/imx708_noir.json
+
+    # Disable text overlay to save CPU
+    rpiCameraTextOverlay: ""
