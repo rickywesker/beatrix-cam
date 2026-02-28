@@ -47,11 +47,11 @@ echo ""
 # 1. System update and dependencies
 # ---------------------------------------------------------------------------
 echo "[1/8] Updating system packages..."
-apt-get update -qq
-apt-get upgrade -y -qq
+apt-get update
+apt-get upgrade -y
 
 echo "[2/8] Installing dependencies..."
-apt-get install -y -qq \
+apt-get install -y \
     nginx-light \
     curl \
     tar \
